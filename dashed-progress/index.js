@@ -74,7 +74,8 @@ export class DashedProgress extends PureComponent {
       indicatorWidth,
       countBars,
       divideEnabled,
-      trailColor
+      trailColor,
+      startColor, endColor
     } = this.props;
 
     return new Promise((resolve, reject) => {
@@ -234,7 +235,7 @@ export class DashedProgress extends PureComponent {
               if (bigCircle.length > k) {
                 if (bigCircle[k].stroke != strokeColor && k <= fill) {
                   stopIndicator = bigCircle[k].stopIndicator;
-                  bigCircle[k].stroke = strokeColor;
+                  bigCircle[k].stroke = 'yellow';
                 } else {
                   break;
                 }
