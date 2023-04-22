@@ -74,8 +74,7 @@ export class DashedProgress extends PureComponent {
       indicatorWidth,
       countBars,
       divideEnabled,
-      trailColor,
-      startColor, endColor
+      trailColor
     } = this.props;
 
     return new Promise((resolve, reject) => {
@@ -205,10 +204,35 @@ export class DashedProgress extends PureComponent {
     });
   }
 
+  // interpolate start and end colors and find a value betwwen based on percentage 
+  interpolateColor(col1, col2, p) {
+    const rgb1 = parseInt(col1, 16);
+    const rgb2 = parseInt(col2, 16);
+    const [r1, g1, b1] = this.colorToArray(rgb1);
+    const [r2, g2, b2] = this.colorToArray(rgb2);
+  
+    const q = 1-p;
+    const rr = Math.round(r1 * p + r2 * q);
+    const rg = Math.round(g1 * p + g2 * q);
+    const rb = Math.round(b1 * p + b2 * q);
+    const number = Number((rr << 16) + (rg << 8) + rb).toString(16);
+    return `#${number}`
+  }
+  
+  // utility method
+  colorToArray(rgb) {
+    const r = rgb >> 16;
+    const g = (rgb >> 8) % 256;
+    const b = rgb % 256;
+  
+    return [r, g, b];
+  }
   //increase animated dash on weight_plate circle
   increaseWeight() {
     try {
-      const { strokeColor, fill, duration } = this.props;
+      const { strokeColor, startColor, endColor, fill, duration } = this.props;
+      const withoutHashStartColor = startColor.substring(1, startColor.length);
+      const withoutHashEndColor = endColor.substring(1, endColor.length);
       //divide time interval for each dash
       var interval_time = 3;
 
@@ -235,7 +259,7 @@ export class DashedProgress extends PureComponent {
               if (bigCircle.length > k) {
                 if (bigCircle[k].stroke != strokeColor && k <= fill) {
                   stopIndicator = bigCircle[k].stopIndicator;
-                  bigCircle[k].stroke = 'yellow';
+                  bigCircle[k].stroke = this.interpolateColor(withoutHashStartColor, withoutHashEndColor, k/this.props.countBars);
                 } else {
                   break;
                 }
